@@ -46,12 +46,14 @@ public class SlackAPIImpl implements SlackAPI {
   private final Client client;
   private final String clientId;
   private final String clientSecret;
+  private final int maxRetries;
 
   public SlackAPIImpl(String clientId,
       String clientSecret,
-      Client client) {
+      Client client, int maxRetries) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.maxRetries = maxRetries;
 
     JacksonJaxbJsonProvider jacksonProvider = new JacksonJaxbJsonProvider();
     jacksonProvider.setMapper(MAPPER);
@@ -158,7 +160,6 @@ public class SlackAPIImpl implements SlackAPI {
   @VisibleForTesting
   <T> T rateLimitAwareRequest(Supplier<T> supplier) {
     int counter = 0;
-    int maxRetries = 5;
     do {
       try {
         return supplier.get();
