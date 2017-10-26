@@ -1,23 +1,20 @@
-package api;
+package com.vspr.ai.slack.api;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.util.List;
 import java.util.Map;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@JsonSerialize(as = ImmutableListUsersResponse.class)
-@JsonDeserialize(as = ImmutableListUsersResponse.class)
+@JsonSerialize(as = ImmutableResponseMetadata.class)
+@JsonDeserialize(as = ImmutableResponseMetadata.class)
 @SlackApiImmutableStyle
-public abstract class ListUsersResponse extends BaseSlackResponse {
+public abstract class ResponseMetadata {
 
-  public abstract List<User> getMembers();
-
-  @JsonProperty("response_metadata")
-  public abstract ResponseMetadata getResponseMetadata();
+  @JsonProperty("next_cursor")
+  public abstract String getNextCursor();
 
   @JsonAnyGetter
   @AllowNulls

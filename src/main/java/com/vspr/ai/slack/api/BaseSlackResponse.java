@@ -1,4 +1,4 @@
-package api;
+package com.vspr.ai.slack.api;
 
 import java.util.Optional;
 

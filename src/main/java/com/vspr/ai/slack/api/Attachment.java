@@ -1,4 +1,4 @@
-package api;
+package com.vspr.ai.slack.api;
 
 /**
  * Created by cobb on 7/17/17.

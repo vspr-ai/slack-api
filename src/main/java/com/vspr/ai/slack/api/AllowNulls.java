@@ -1,4 +1,4 @@
-package api;
+package com.vspr.ai.slack.api;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

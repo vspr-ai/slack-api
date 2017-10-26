@@ -1,4 +1,4 @@
-package api;
+package com.vspr.ai.slack.api;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,19 +9,22 @@ import java.util.Optional;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@JsonSerialize(as = ImmutableUser.class)
-@JsonDeserialize(as = ImmutableUser.class)
+@JsonSerialize(as = ImmutableProfile.class)
+@JsonDeserialize(as = ImmutableProfile.class)
 @SlackApiImmutableStyle
-public abstract class User {
+public abstract class Profile {
 
-  public abstract String getName();
+  @JsonProperty("first_name")
+  public abstract Optional<String> getFirstName();
 
-  @JsonProperty("is_bot")
-  public abstract Optional<Boolean> isBot();
-
-  public abstract Profile getProfile();
+  @JsonProperty("last_name")
+  public abstract Optional<String> getLastName();
 
   @JsonAnyGetter
   @AllowNulls
   public abstract Map<String, Object> getOther();
+
+  public static ImmutableProfile.Builder builder() {
+    return ImmutableProfile.builder();
+  }
 }

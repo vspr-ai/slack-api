@@ -1,4 +1,4 @@
-package api;
+package com.vspr.ai.slack.api;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
