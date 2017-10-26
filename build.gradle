@@ -1,5 +1,6 @@
-group 'com.vspr.ai.slack'
-version '0.1-SNAPSHOT'
+group 'com.github.vspr-ai'
+version '0.1.2-SNAPSHOT'
+description 'another slack api for java'
 
 apply plugin: 'java'
 apply plugin: "net.ltgt.apt" // <-- apt plugin
@@ -21,8 +22,10 @@ buildscript {
     }
     dependencies {
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.7"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
     }
 }
+apply plugin: 'io.codearte.nexus-staging'
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -42,4 +45,74 @@ dependencies {
     apt "org.immutables:value:2.4.3" // for annotation processing only
 
     compileOnly "org.immutables:value:2.4.3:annotations" // compilation-only annotations artifact
+}
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+apply plugin: 'signing'
+apply plugin: 'maven'
+
+// Signature of artifacts
+signing {
+    sign configurations.archives
+}
+
+// OSSRH publication
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            // POM signature
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            // Target repository
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            pom.project {
+                name project.name
+                description project.description
+                packaging 'jar'
+                url 'https://github.com/vspr-ai/slack-api'
+
+                scm {
+                    connection 'scm:git:https://github.com/vspr-ai/slack-api.git'
+                    developerConnection 'scm:git:git@github.com:vspr-ai/slack-api.git'
+                    url 'https://github.com/vspr-ai/slack-api.git'
+                }
+
+                licenses {
+                    license {
+                        name 'Apache 2.0'
+                        url 'https://www.apache.org/licenses/LICENSE-2.0'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'Cobb'
+                        name = 'Eric Cobb'
+                        email = 'cobb@vspr.ai'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+nexusStaging {
+    username = ossrhUsername
+    password = ossrhPassword
 }
