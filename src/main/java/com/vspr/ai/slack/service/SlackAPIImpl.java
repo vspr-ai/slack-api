@@ -48,7 +48,7 @@ public class SlackAPIImpl implements SlackAPI {
   private final String clientSecret;
   private final int maxRetries;
 
-  public SlackAPIImpl(String clientId,
+  SlackAPIImpl(String clientId,
       String clientSecret,
       Client client, int maxRetries) {
     this.clientId = clientId;
