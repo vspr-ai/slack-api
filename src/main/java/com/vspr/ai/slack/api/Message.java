@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.immutables.value.Value;
+import org.immutables.value.Value.Default;
 
 /**
  * Created by cobb on 7/17/17.
@@ -24,7 +25,10 @@ public abstract class Message {
 
   public abstract String getText();
 
-  public abstract boolean getAsUser();
+  @Default
+  public boolean getAsUser() {
+    return true;
+  }
 
   public abstract List<Attachment> getAttachments();
 
