@@ -16,7 +16,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.vspr.ai.slack.api.Attachment;
 import com.vspr.ai.slack.api.ButtonAction;
-import com.vspr.ai.slack.api.InteractiveMessageAttachment;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
@@ -139,7 +138,7 @@ public class SlackAPIImplTest {
   @Test
   public void toMap() throws JsonProcessingException {
 
-    Attachment attachment = InteractiveMessageAttachment.builder()
+    Attachment attachment = Attachment.builder()
         .setText("How well does it address the problem?")
         .setFallback("dang")
         .setCallbackId(UUID.randomUUID().toString())
