@@ -1,5 +1,6 @@
 package com.vspr.ai.slack.service;
 
+import com.vspr.ai.slack.api.CreateChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
@@ -25,6 +26,11 @@ public interface SlackAPI {
    * Get a list of Users from the slack API.
    */
   ListUsersResponse listUsers(String token, String cursor, int limit, boolean presence);
+
+  /**
+   * Create a new slack channel
+   */
+  CreateChannelResponse createChannel(String name, String userToken);
 
   /**
    * Request Access via the Slack Oauth flow.
