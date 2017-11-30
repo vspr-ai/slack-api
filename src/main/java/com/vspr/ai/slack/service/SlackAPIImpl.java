@@ -1,5 +1,6 @@
 package com.vspr.ai.slack.service;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.sleep;
 import static java.util.Optional.ofNullable;
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.vspr.ai.slack.api.CreateChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
@@ -37,9 +40,9 @@ public class SlackAPIImpl implements SlackAPI {
 
   private static final Logger logger = LoggerFactory.getLogger(SlackAPIImpl.class);
   private static ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
-  private static String SLACK_BASE_WEB_API = "https://slack.com/api";
 
   private static final String POST_MESSAGE = "/chat.postMessage";
+  private static final String CREATE_CHANNEL = "/channels.create";
   private static final String LIST_USERS = "users.list";
   private static final String OAUTH_ACCESS = "oauth.access";
 
@@ -92,6 +95,20 @@ public class SlackAPIImpl implements SlackAPI {
   }
 
   @Override
+  public CreateChannelResponse createChannel(String name, String userToken) {
+    checkNotNull(name, "Name is required to create a channel.");
+    checkNotNull(name, "User Token is required to create a channel.");
+
+    MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
+    requestMap.putSingle("name", name);
+    requestMap.putSingle("token", userToken);
+    return rateLimitAwareRequest(() -> client.target(createChannelUri())
+        .request()
+        .post(Entity.entity(requestMap, APPLICATION_FORM_URLENCODED),
+            CreateChannelResponse.class));
+  }
+
+  @Override
   public OauthAccessResponse getAccess(String code) {
     MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
     requestMap.putSingle("code", code);
@@ -124,37 +141,35 @@ public class SlackAPIImpl implements SlackAPI {
     return retValue;
   }
 
-  @VisibleForTesting
-  URI postMessageUri() {
+  private URI getUri(String path) {
     try {
+      String SLACK_BASE_WEB_API = "https://slack.com/api";
       return UriBuilder.fromUri(new URI(SLACK_BASE_WEB_API))
-          .path(POST_MESSAGE)
+          .path(path)
           .build();
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  @VisibleForTesting
+  URI postMessageUri() {
+    return getUri(POST_MESSAGE);
+  }
+
+  @VisibleForTesting
+  URI createChannelUri() {
+    return getUri(CREATE_CHANNEL);
   }
 
   @VisibleForTesting
   URI listUsersUri() {
-    try {
-      return UriBuilder.fromUri(new URI(SLACK_BASE_WEB_API))
-          .path(LIST_USERS)
-          .build();
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException(e);
-    }
+    return getUri(LIST_USERS);
   }
 
   @VisibleForTesting
   URI oauthAccessUri() {
-    try {
-      return UriBuilder.fromUri(new URI(SLACK_BASE_WEB_API))
-          .path(OAUTH_ACCESS)
-          .build();
-    } catch (URISyntaxException e) {
-      throw new IllegalArgumentException(e);
-    }
+    return getUri(OAUTH_ACCESS);
   }
 
   @VisibleForTesting

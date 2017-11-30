@@ -4,24 +4,15 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Map;
+import java.util.Optional;
 import org.immutables.value.Value;
 
-/**
- * Created by cobb on 7/18/17.
- */
 @Value.Immutable
-@JsonSerialize(as = ImmutableChannel.class)
-@JsonDeserialize(as = ImmutableChannel.class)
+@JsonSerialize(as = ImmutableCreateChannelResponse.class)
+@JsonDeserialize(as = ImmutableCreateChannelResponse.class)
 @SlackApiImmutableStyle
-public abstract class Channel {
-
-  public abstract String getId();
-
-  public abstract String getName();
-
-  public static ImmutableChannel.Builder builder() {
-    return ImmutableChannel.builder();
-  }
+public abstract class CreateChannelResponse extends BaseSlackResponse {
+  public abstract Optional<Channel> getChannel();
 
   @JsonAnyGetter
   @AllowNulls

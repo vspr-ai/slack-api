@@ -16,6 +16,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.vspr.ai.slack.api.Attachment;
 import com.vspr.ai.slack.api.ButtonAction;
+import com.vspr.ai.slack.api.CreateChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
@@ -61,6 +62,9 @@ public class SlackAPIImplTest {
 
   @Mock
   private SlackMessageResponse postMessageResponse;
+
+  @Mock
+  private CreateChannelResponse createChannelResponse;
 
   @Mock
   private ListUsersResponse listUsersResponse;
@@ -123,8 +127,22 @@ public class SlackAPIImplTest {
         .build();
 
     assertThat(underTest.postMessage(test), is(postMessageResponse));
-
     assertThat(entityArgumentCaptor.getValue(), notNullValue());
+  }
+
+  @Test
+  public void createChannel() {
+    configureCreateChannel();
+    assertThat(underTest.createChannel("test", "token"), is(createChannelResponse));
+    assertThat(entityArgumentCaptor.getValue(), notNullValue());
+  }
+
+  private void configureCreateChannel() {
+    when(client.target(underTest.createChannelUri())).thenReturn(webTarget);
+    when(webTarget.request()).thenReturn(webTargetBuilder);
+    when(webTargetBuilder
+        .post(entityArgumentCaptor.capture(), eq(CreateChannelResponse.class)))
+        .thenReturn(createChannelResponse);
   }
 
   private void configurePostMessage() {
