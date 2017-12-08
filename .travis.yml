@@ -1,0 +1,18 @@
+language: java
+jdk: oraclejdk8
+
+script:
+  - ./gradlew check
+  - ./gradlew jacocoTestReport
+#  - ./gradlew integTest
+#  - ./gradlew createDockerFile
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+
+branches:
+  only:
+  - master
+  - /^RELEASE-.*$/
+
+sudo: required
