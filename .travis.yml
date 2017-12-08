@@ -13,4 +13,7 @@ branches:
   - master
   - /^RELEASE-.*$/
 
+install:
+  - gradle assemble -x signArchives
+
 sudo: required
