@@ -1,3 +1,6 @@
+# Slack API
+[![Build Status](https://travis-ci.org/vspr-ai/slack-api.svg?branch=master)](https://travis-ci.org/vspr-ai/slack-api) [![codecov](https://codecov.io/gh/vspr-ai/slack-api/branch/master/graph/badge.svg)](https://codecov.io/gh/vspr-ai/slack-api)
+
 ## Building
 
 `gradle build`
