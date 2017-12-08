@@ -74,6 +74,9 @@ signing {
     sign configurations.archives
 }
 
+def centralUsername = hasProperty('ossrhUsername') ? ossrhUsername : System.getenv('ossrhUsername')
+def centralPassword = hasProperty('ossrhPassword') ? ossrhPassword : System.getenv('ossrhPassword')
+
 // OSSRH publication
 uploadArchives {
     repositories {
@@ -82,7 +85,7 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
             // Target repository
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: centralUsername, password: centralPassword)
             }
             pom.project {
                 name project.name
@@ -118,8 +121,8 @@ uploadArchives {
 
 
 nexusStaging {
-    username = ossrhUsername
-    password = ossrhPassword
+    username = centralUsername
+    password = centralPassword
 }
 
 jacocoTestReport {
