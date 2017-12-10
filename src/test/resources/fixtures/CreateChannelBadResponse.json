@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error": "invalid_name_specials",
+  "detail": "Value passed for `name` contained unallowed special characters."
+}
