@@ -16,8 +16,4 @@ public abstract class BotOauthData {
 
   @JsonProperty("bot_access_token")
   public abstract String getBotAccessToken();
-
-  public static ImmutableBotOauthData.Builder builder() {
-    return ImmutableBotOauthData.builder();
-  }
 }
