@@ -5,12 +5,6 @@
 
 `gradle build`
 
-## TODO
-
-* [x] Improve readme with usage examples
-* [x] Set up push to maven central
-* [x] Factory for building API
-* [ ] Slash commands, event subscription
 
 ## Usage
 First, create an instance of the slack API with the `SlackAPIFactory`:
