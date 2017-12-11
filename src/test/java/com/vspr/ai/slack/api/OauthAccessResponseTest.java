@@ -17,4 +17,12 @@ public class OauthAccessResponseTest extends SlackApiFixtureBaseTest {
     assertThat(oauthAccessResponse.getBot().isPresent(), is(true));
     assertThat(oauthAccessResponse.getOk(), is("true"));
   }
+
+  @Test
+  public void testBuilder() {
+    OauthAccessResponse oauthAccessResponse = OauthAccessResponse.builder()
+        .build();
+
+    assertThat(oauthAccessResponse, notNullValue());
+  }
 }

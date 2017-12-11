@@ -40,4 +40,8 @@ public abstract class OauthAccessResponse extends BaseSlackResponse {
   @JsonAnyGetter
   @AllowNulls
   public abstract Map<String, Object> getOther();
+
+  public static ImmutableOauthAccessResponse.Builder builder() {
+    return ImmutableOauthAccessResponse.builder();
+  }
 }
