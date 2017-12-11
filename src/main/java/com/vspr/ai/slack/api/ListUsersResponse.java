@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 /**
@@ -26,7 +27,7 @@ public abstract class ListUsersResponse extends BaseSlackResponse {
    * Response Metadata contains information about response pagination
    */
   @JsonProperty("response_metadata")
-  public abstract ResponseMetadata getResponseMetadata();
+  public abstract Optional<ResponseMetadata> getResponseMetadata();
 
   /**
    * Contains all json data not explicitly found in this DTO.

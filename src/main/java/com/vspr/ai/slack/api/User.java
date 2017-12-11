@@ -14,6 +14,8 @@ import org.immutables.value.Value;
 @SlackApiImmutableStyle
 public abstract class User {
 
+  public abstract String getId();
+
   public abstract String getName();
 
   @JsonProperty("is_bot")
