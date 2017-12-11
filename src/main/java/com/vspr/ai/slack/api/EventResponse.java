@@ -8,7 +8,8 @@ import java.util.Optional;
 import org.immutables.value.Value;
 
 /**
- * Created by cobb on 7/27/17.
+ * Correct response representation to {@link Event} requests from slack. You should return the
+ * challenge supplied. Created by cobb on 7/27/17.
  */
 @Value.Immutable
 @JsonSerialize(as = ImmutableEventResponse.class)

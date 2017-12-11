@@ -8,17 +8,29 @@ import java.util.List;
 import java.util.Map;
 import org.immutables.value.Value;
 
+/**
+ * Response to {@link com.vspr.ai.slack.service.SlackAPI#listUsers(String, String, int, boolean)}
+ */
 @Value.Immutable
 @JsonSerialize(as = ImmutableListUsersResponse.class)
 @JsonDeserialize(as = ImmutableListUsersResponse.class)
 @SlackApiImmutableStyle
 public abstract class ListUsersResponse extends BaseSlackResponse {
 
+  /**
+   * List of users returned in the query
+   */
   public abstract List<User> getMembers();
 
+  /**
+   * Response Metadata contains information about response pagination
+   */
   @JsonProperty("response_metadata")
   public abstract ResponseMetadata getResponseMetadata();
 
+  /**
+   * Contains all json data not explicitly found in this DTO.
+   */
   @JsonAnyGetter
   @AllowNulls
   public abstract Map<String, Object> getOther();

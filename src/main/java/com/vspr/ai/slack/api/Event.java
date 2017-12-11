@@ -17,13 +17,25 @@ import org.immutables.value.Value;
 @SlackApiImmutableStyle
 public abstract class Event {
 
+  /**
+   * Challenge token provided to slack api
+   */
   public abstract Optional<String> getChallenge();
 
+  /**
+   * Token for your app, should be valdiated before using even.
+   */
   public abstract String getToken();
 
+  /**
+   * Team_id sourcing the event.
+   */
   @JsonProperty("team_id")
   public abstract Optional<String> getTeamId();
 
+  /**
+   * Additional event details
+   */
   @JsonProperty("event")
   public abstract Optional<EventType> getEventType();
 
