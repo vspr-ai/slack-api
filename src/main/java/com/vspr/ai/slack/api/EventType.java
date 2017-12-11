@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Created by cobb on 7/28/17.
+ * Base Type for slack events: https://api.slack.com/events-api Should be deserialized using
+ * jackson's polymorphic deserialization
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -14,5 +15,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public abstract class EventType {
 
+  /**
+   * The type of event, used for polymorphic deserialization
+   */
   public abstract String getType();
 }
