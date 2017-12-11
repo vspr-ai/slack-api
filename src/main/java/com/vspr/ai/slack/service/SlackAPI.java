@@ -6,6 +6,7 @@ import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.URI;
+import javax.annotation.Nullable;
 
 /**
  * Created by cobb on 7/18/17.
@@ -25,7 +26,7 @@ public interface SlackAPI {
   /**
    * Get a list of Users from the slack API.
    */
-  ListUsersResponse listUsers(String token, String cursor, int limit, boolean presence);
+  ListUsersResponse listUsers(String token, @Nullable String cursor, int limit, boolean presence);
 
   /**
    * Create a new slack channel

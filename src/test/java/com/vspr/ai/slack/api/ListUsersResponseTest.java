@@ -14,6 +14,8 @@ public class ListUsersResponseTest extends SlackApiFixtureBaseTest {
         ListUsersResponse.class);
 
     assertThat(listUsersResponse.getMembers(), hasSize(2));
-    assertThat(listUsersResponse.getResponseMetadata().getNextCursor(), notNullValue());
+    assertThat(
+        listUsersResponse.getResponseMetadata().orElseThrow(IllegalArgumentException::new)
+            .getNextCursor(), notNullValue());
   }
 }
