@@ -11,7 +11,7 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableInviteUserToChannelResponse.class)
 @JsonDeserialize(as = ImmutableInviteUserToChannelResponse.class)
 @SlackApiImmutableStyle
-public abstract class InviteUserToChannelResponse extends BaseSlackResponse{
+public abstract class InviteUserToChannelResponse extends BaseSlackResponse {
 
   /**
    * The target channel, will be {@link Optional#empty()} if request failed.
