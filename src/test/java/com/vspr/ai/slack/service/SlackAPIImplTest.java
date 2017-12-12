@@ -17,6 +17,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.vspr.ai.slack.api.Attachment;
 import com.vspr.ai.slack.api.ButtonAction;
 import com.vspr.ai.slack.api.CreateChannelResponse;
+import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
@@ -31,6 +32,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
@@ -77,6 +79,9 @@ public class SlackAPIImplTest {
 
   @Mock
   private StatusType statusType;
+
+  @Mock
+  private InviteUserToChannelResponse inviteUserToChannelResponse;
 
   @Mock
   private OauthAccessResponse oauthAccessResponse;
@@ -143,6 +148,29 @@ public class SlackAPIImplTest {
     when(webTargetBuilder
         .post(entityArgumentCaptor.capture(), eq(CreateChannelResponse.class)))
         .thenReturn(createChannelResponse);
+  }
+
+  @Test
+  public void inviteToChannel() {
+    configureInviteToChannel();
+    assertThat(underTest.inviteToChannel("userId", "channelId", "token"),
+        is(inviteUserToChannelResponse));
+    final Entity<?> entity = entityArgumentCaptor.getValue();
+    assertThat(entity, notNullValue());
+
+    MultivaluedHashMap values = (MultivaluedHashMap) entity.getEntity();
+
+    assertThat(values.get("channel").get(0), is("channelId"));
+    assertThat(values.get("token").get(0), is("token"));
+    assertThat(values.get("user").get(0), is("userId"));
+  }
+
+  private void configureInviteToChannel() {
+    when(client.target(underTest.inviteToChannelUri())).thenReturn(webTarget);
+    when(webTarget.request()).thenReturn(webTargetBuilder);
+    when(webTargetBuilder
+        .post(entityArgumentCaptor.capture(), eq(InviteUserToChannelResponse.class)))
+        .thenReturn(inviteUserToChannelResponse);
   }
 
   private void configurePostMessage() {

@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.sleep;
 import static java.util.Optional.ofNullable;
+import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.unescapeXml;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.vspr.ai.slack.api.CreateChannelResponse;
+import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
@@ -42,6 +44,7 @@ public class SlackAPIImpl implements SlackAPI {
 
   private static final String POST_MESSAGE = "/chat.postMessage";
   private static final String CREATE_CHANNEL = "/channels.create";
+  private static final String INVITE_CHANNEL = "/channels.invite";
   private static final String LIST_USERS = "users.list";
   private static final String OAUTH_ACCESS = "oauth.access";
 
@@ -66,7 +69,7 @@ public class SlackAPIImpl implements SlackAPI {
   public SlackMessageResponse postMessage(Message message) {
     return rateLimitAwareRequest(() -> client.target(postMessageUri())
         .request()
-        .post(Entity.entity(toMap(message), APPLICATION_FORM_URLENCODED),
+        .post(entity(toMap(message), APPLICATION_FORM_URLENCODED),
             SlackMessageResponse.class));
   }
 
@@ -74,7 +77,7 @@ public class SlackAPIImpl implements SlackAPI {
   public void postMessageToResponseUrl(Message message, URI uri) {
     rateLimitAwareRequest(() -> client.target(uri)
         .request()
-        .post(Entity.entity(message, APPLICATION_JSON),
+        .post(entity(message, APPLICATION_JSON),
             Response.class));
   }
 
@@ -89,22 +92,40 @@ public class SlackAPIImpl implements SlackAPI {
 
     return rateLimitAwareRequest(() -> client.target(listUsersUri())
         .request()
-        .post(Entity.entity(requestMap, APPLICATION_FORM_URLENCODED),
+        .post(entity(requestMap, APPLICATION_FORM_URLENCODED),
             ListUsersResponse.class));
   }
 
   @Override
   public CreateChannelResponse createChannel(String name, String userToken) {
     checkNotNull(name, "Name is required to create a channel.");
-    checkNotNull(name, "User Token is required to create a channel.");
+    checkNotNull(userToken, "User Auth Token is required to create a channel.");
 
     MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
     requestMap.putSingle("name", name);
     requestMap.putSingle("token", userToken);
     return rateLimitAwareRequest(() -> client.target(createChannelUri())
         .request()
-        .post(Entity.entity(requestMap, APPLICATION_FORM_URLENCODED),
+        .post(entity(requestMap, APPLICATION_FORM_URLENCODED),
             CreateChannelResponse.class));
+  }
+
+  @Override
+  public InviteUserToChannelResponse inviteToChannel(String userId, String channelId,
+      String userAuthToken) {
+    checkNotNull(userId, "userId is required to create a channel.");
+    checkNotNull(channelId, "channelId is required to create a channel.");
+    checkNotNull(userAuthToken, "User Token is required to create a channel.");
+
+    MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
+    requestMap.putSingle("channel", channelId);
+    requestMap.putSingle("user", userId);
+    requestMap.putSingle("token", userAuthToken);
+
+    return rateLimitAwareRequest(() -> client.target(inviteToChannelUri())
+        .request()
+        .post(entity(requestMap, APPLICATION_FORM_URLENCODED),
+            InviteUserToChannelResponse.class));
   }
 
   @Override
@@ -116,7 +137,7 @@ public class SlackAPIImpl implements SlackAPI {
 
     return rateLimitAwareRequest(() -> client.target(oauthAccessUri())
         .request()
-        .post(Entity.entity(requestMap, APPLICATION_FORM_URLENCODED),
+        .post(entity(requestMap, APPLICATION_FORM_URLENCODED),
             OauthAccessResponse.class));
   }
 
@@ -159,6 +180,11 @@ public class SlackAPIImpl implements SlackAPI {
   @VisibleForTesting
   URI createChannelUri() {
     return getUri(CREATE_CHANNEL);
+  }
+
+  @VisibleForTesting
+  URI inviteToChannelUri() {
+    return getUri(INVITE_CHANNEL);
   }
 
   @VisibleForTesting
