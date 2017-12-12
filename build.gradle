@@ -1,5 +1,5 @@
 group 'com.github.vspr-ai'
-version '1.0.1-SNAPSHOT'
+version '1.1.0-SNAPSHOT'
 description 'another slack api for java'
 
 apply plugin: 'java'
