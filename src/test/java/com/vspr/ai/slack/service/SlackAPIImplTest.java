@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -21,12 +22,15 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.PinRequest;
+import com.vspr.ai.slack.api.PinRequestResponse;
 import com.vspr.ai.slack.api.SetPurposeResponse;
 import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 import javax.ws.rs.WebApplicationException;
@@ -91,6 +95,8 @@ public class SlackAPIImplTest {
   @Mock
   private SetPurposeResponse setPurposeResponse;
 
+  @Mock
+  private PinRequestResponse pinRequestResponse;
 
   @Mock
   private OauthAccessResponse oauthAccessResponse;
@@ -226,6 +232,34 @@ public class SlackAPIImplTest {
     when(webTargetBuilder
         .post(entityArgumentCaptor.capture(), eq(SetPurposeResponse.class)))
         .thenReturn(setPurposeResponse);
+  }
+
+  @Test
+  public void pin() {
+    configurePin();
+    assertThat(underTest.pin(PinRequest.builder()
+            .setChannel("channelId")
+            .setToken("token")
+            .setTimestamp("1234")
+            .build()),
+        is(pinRequestResponse));
+    final Entity<?> entity = entityArgumentCaptor.getValue();
+    assertThat(entity, notNullValue());
+
+    PinRequest pinRequest = (PinRequest) entity.getEntity();
+
+    assertThat(pinRequest.getChannel(), is("channelId"));
+    assertThat(pinRequest.getToken(), is("token"));
+    assertThat(pinRequest.getTimestamp(), is(Optional.of("1234")));
+  }
+
+  private void configurePin() {
+    when(client.target(underTest.addPinsUri())).thenReturn(webTarget);
+    when(webTarget.request()).thenReturn(webTargetBuilder);
+    when(webTargetBuilder.header(anyString(), anyString())).thenReturn(webTargetBuilder);
+    when(webTargetBuilder
+        .post(entityArgumentCaptor.capture(), eq(PinRequestResponse.class)))
+        .thenReturn(pinRequestResponse);
   }
 
   private void configurePostMessage() {

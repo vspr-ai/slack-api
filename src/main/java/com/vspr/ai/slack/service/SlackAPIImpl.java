@@ -2,6 +2,7 @@ package com.vspr.ai.slack.service;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Optional.ofNullable;
 import static javax.ws.rs.client.Entity.entity;
@@ -20,15 +21,19 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.PinRequest;
+import com.vspr.ai.slack.api.PinRequestResponse;
 import com.vspr.ai.slack.api.SetPurposeResponse;
 import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -49,6 +54,7 @@ public class SlackAPIImpl implements SlackAPI {
   private static final String INVITE_CHANNEL = "/channels.invite";
   private static final String SET_TOPIC = "/channels.setTopic";
   private static final String SET_PURPOSE = "/channels.setPurpose";
+  private static final String PINS_ADD = "/pins.add";
   private static final String LIST_USERS = "users.list";
   private static final String OAUTH_ACCESS = "oauth.access";
 
@@ -163,6 +169,16 @@ public class SlackAPIImpl implements SlackAPI {
   }
 
   @Override
+  public PinRequestResponse pin(PinRequest pinRequest) {
+    return rateLimitAwareRequest(() -> client.target(addPinsUri())
+        .request()
+        .header("Authorization", format("Bearer %s", pinRequest.getToken()))
+        .post(entity(pinRequest,
+            new MediaType("application", "json", Charset.defaultCharset().name())),
+            PinRequestResponse.class));
+  }
+
+  @Override
   public OauthAccessResponse getAccess(String code) {
     MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
     requestMap.putSingle("code", code);
@@ -223,6 +239,11 @@ public class SlackAPIImpl implements SlackAPI {
   @VisibleForTesting
   URI listUsersUri() {
     return getUri(LIST_USERS);
+  }
+
+  @VisibleForTesting
+  URI addPinsUri() {
+    return getUri(PINS_ADD);
   }
 
   @VisibleForTesting
