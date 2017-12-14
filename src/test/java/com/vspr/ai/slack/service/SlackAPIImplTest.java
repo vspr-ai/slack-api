@@ -21,6 +21,7 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.SetPurposeResponse;
 import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.MalformedURLException;
@@ -86,6 +87,10 @@ public class SlackAPIImplTest {
 
   @Mock
   private SetTopicResponse setTopicResponse;
+
+  @Mock
+  private SetPurposeResponse setPurposeResponse;
+
 
   @Mock
   private OauthAccessResponse oauthAccessResponse;
@@ -198,6 +203,29 @@ public class SlackAPIImplTest {
     when(webTargetBuilder
         .post(entityArgumentCaptor.capture(), eq(SetTopicResponse.class)))
         .thenReturn(setTopicResponse);
+  }
+
+  @Test
+  public void setPurpose() {
+    configureSetPurpose();
+    assertThat(underTest.setPurpose("the best avenger", "channelId", "token"),
+        is(setPurposeResponse));
+    final Entity<?> entity = entityArgumentCaptor.getValue();
+    assertThat(entity, notNullValue());
+
+    MultivaluedHashMap values = (MultivaluedHashMap) entity.getEntity();
+
+    assertThat(values.get("channel").get(0), is("channelId"));
+    assertThat(values.get("token").get(0), is("token"));
+    assertThat(values.get("purpose").get(0), is("the best avenger"));
+  }
+
+  private void configureSetPurpose() {
+    when(client.target(underTest.setPurposeUri())).thenReturn(webTarget);
+    when(webTarget.request()).thenReturn(webTargetBuilder);
+    when(webTargetBuilder
+        .post(entityArgumentCaptor.capture(), eq(SetPurposeResponse.class)))
+        .thenReturn(setPurposeResponse);
   }
 
   private void configurePostMessage() {

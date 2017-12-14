@@ -14,11 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.annotations.VisibleForTesting;
+import com.vspr.ai.slack.api.BaseSlackResponse;
 import com.vspr.ai.slack.api.CreateChannelResponse;
 import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.SetPurposeResponse;
 import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.URI;
@@ -46,6 +48,7 @@ public class SlackAPIImpl implements SlackAPI {
   private static final String CREATE_CHANNEL = "/channels.create";
   private static final String INVITE_CHANNEL = "/channels.invite";
   private static final String SET_TOPIC = "/channels.setTopic";
+  private static final String SET_PURPOSE = "/channels.setPurpose";
   private static final String LIST_USERS = "users.list";
   private static final String OAUTH_ACCESS = "oauth.access";
 
@@ -132,18 +135,31 @@ public class SlackAPIImpl implements SlackAPI {
   @Override
   public SetTopicResponse setTopic(String topic, String channelId, String token) {
     checkNotNull(topic, "topic is required to set a topic.");
+    return setChannelAttribute("topic", topic, setTopicUri(), channelId, token,
+        SetTopicResponse.class);
+  }
+
+  private <T extends BaseSlackResponse> T setChannelAttribute(String attributeName,
+      String attribute, URI uri, String channelId, String token, Class<T> responseClass) {
     checkNotNull(channelId, "channelId is required to set a topic.");
     checkNotNull(token, "A Token is required to set a topic.");
 
     MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
     requestMap.putSingle("channel", channelId);
-    requestMap.putSingle("topic", topic);
+    requestMap.putSingle(attributeName, attribute);
     requestMap.putSingle("token", token);
 
-    return rateLimitAwareRequest(() -> client.target(setTopicUri())
+    return rateLimitAwareRequest(() -> client.target(uri)
         .request()
         .post(entity(requestMap, APPLICATION_FORM_URLENCODED),
-            SetTopicResponse.class));
+            responseClass));
+  }
+
+  @Override
+  public SetPurposeResponse setPurpose(String purpose, String channelId, String token) {
+    checkNotNull(purpose, "purpose is required to set a purpose.");
+    return setChannelAttribute("purpose", purpose, setPurposeUri(), channelId, token,
+        SetPurposeResponse.class);
   }
 
   @Override
@@ -175,7 +191,6 @@ public class SlackAPIImpl implements SlackAPI {
         throw new IllegalArgumentException(e);
       }
     }
-
     return retValue;
   }
 
@@ -218,6 +233,11 @@ public class SlackAPIImpl implements SlackAPI {
   @VisibleForTesting
   URI setTopicUri() {
     return getUri(SET_TOPIC);
+  }
+
+  @VisibleForTesting
+  URI setPurposeUri() {
+    return getUri(SET_PURPOSE);
   }
 
   @VisibleForTesting
