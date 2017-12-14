@@ -20,4 +20,11 @@ public abstract class BaseSlackResponse {
    * Error message from slack if request failed
    */
   public abstract Optional<String> getError();
+
+  /**
+   * If you are lacking permissions to perform action, the needed permission should be here.
+   */
+  public abstract Optional<String> getNeeded();
+
+  public abstract Optional<String> getProvided();
 }

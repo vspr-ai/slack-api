@@ -21,6 +21,7 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -82,6 +83,9 @@ public class SlackAPIImplTest {
 
   @Mock
   private InviteUserToChannelResponse inviteUserToChannelResponse;
+
+  @Mock
+  private SetTopicResponse setTopicResponse;
 
   @Mock
   private OauthAccessResponse oauthAccessResponse;
@@ -171,6 +175,29 @@ public class SlackAPIImplTest {
     when(webTargetBuilder
         .post(entityArgumentCaptor.capture(), eq(InviteUserToChannelResponse.class)))
         .thenReturn(inviteUserToChannelResponse);
+  }
+
+  @Test
+  public void setTopic() {
+    configureSetTopic();
+    assertThat(underTest.setTopic("the best avenger", "channelId", "token"),
+        is(setTopicResponse));
+    final Entity<?> entity = entityArgumentCaptor.getValue();
+    assertThat(entity, notNullValue());
+
+    MultivaluedHashMap values = (MultivaluedHashMap) entity.getEntity();
+
+    assertThat(values.get("channel").get(0), is("channelId"));
+    assertThat(values.get("token").get(0), is("token"));
+    assertThat(values.get("topic").get(0), is("the best avenger"));
+  }
+
+  private void configureSetTopic() {
+    when(client.target(underTest.setTopicUri())).thenReturn(webTarget);
+    when(webTarget.request()).thenReturn(webTargetBuilder);
+    when(webTargetBuilder
+        .post(entityArgumentCaptor.capture(), eq(SetTopicResponse.class)))
+        .thenReturn(setTopicResponse);
   }
 
   private void configurePostMessage() {
