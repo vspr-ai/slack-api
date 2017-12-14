@@ -5,6 +5,7 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.SetPurposeResponse;
 import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.URI;
@@ -46,6 +47,11 @@ public interface SlackAPI {
    * Set a channel's topic
    */
   SetTopicResponse setTopic(String topic, String channelId, String token);
+
+  /**
+   * Set A channel's purpose
+   */
+  SetPurposeResponse setPurpose(String purpose, String channelId, String token);
 
   /**
    * Request Access via the Slack Oauth flow.
