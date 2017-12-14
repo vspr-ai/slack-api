@@ -19,6 +19,7 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,6 +45,7 @@ public class SlackAPIImpl implements SlackAPI {
   private static final String POST_MESSAGE = "/chat.postMessage";
   private static final String CREATE_CHANNEL = "/channels.create";
   private static final String INVITE_CHANNEL = "/channels.invite";
+  private static final String SET_TOPIC = "/channels.setTopic";
   private static final String LIST_USERS = "users.list";
   private static final String OAUTH_ACCESS = "oauth.access";
 
@@ -128,6 +130,23 @@ public class SlackAPIImpl implements SlackAPI {
   }
 
   @Override
+  public SetTopicResponse setTopic(String topic, String channelId, String token) {
+    checkNotNull(topic, "topic is required to set a topic.");
+    checkNotNull(channelId, "channelId is required to set a topic.");
+    checkNotNull(token, "A Token is required to set a topic.");
+
+    MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
+    requestMap.putSingle("channel", channelId);
+    requestMap.putSingle("topic", topic);
+    requestMap.putSingle("token", token);
+
+    return rateLimitAwareRequest(() -> client.target(setTopicUri())
+        .request()
+        .post(entity(requestMap, APPLICATION_FORM_URLENCODED),
+            SetTopicResponse.class));
+  }
+
+  @Override
   public OauthAccessResponse getAccess(String code) {
     MultivaluedMap<String, String> requestMap = new MultivaluedHashMap<>();
     requestMap.putSingle("code", code);
@@ -194,6 +213,11 @@ public class SlackAPIImpl implements SlackAPI {
   @VisibleForTesting
   URI oauthAccessUri() {
     return getUri(OAUTH_ACCESS);
+  }
+
+  @VisibleForTesting
+  URI setTopicUri() {
+    return getUri(SET_TOPIC);
   }
 
   @VisibleForTesting
