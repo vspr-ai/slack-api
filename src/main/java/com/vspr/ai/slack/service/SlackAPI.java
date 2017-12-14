@@ -5,6 +5,8 @@ import com.vspr.ai.slack.api.InviteUserToChannelResponse;
 import com.vspr.ai.slack.api.ListUsersResponse;
 import com.vspr.ai.slack.api.Message;
 import com.vspr.ai.slack.api.OauthAccessResponse;
+import com.vspr.ai.slack.api.PinRequest;
+import com.vspr.ai.slack.api.PinRequestResponse;
 import com.vspr.ai.slack.api.SetPurposeResponse;
 import com.vspr.ai.slack.api.SetTopicResponse;
 import com.vspr.ai.slack.api.SlackMessageResponse;
@@ -52,6 +54,11 @@ public interface SlackAPI {
    * Set A channel's purpose
    */
   SetPurposeResponse setPurpose(String purpose, String channelId, String token);
+
+  /**
+   * Pin something in a channel
+   */
+  PinRequestResponse pin(PinRequest pinRequest);
 
   /**
    * Request Access via the Slack Oauth flow.
