@@ -26,4 +26,8 @@ public abstract class User {
   @JsonAnyGetter
   @AllowNulls
   public abstract Map<String, Object> getOther();
+
+  public static ImmutableUser.Builder builder() {
+    return ImmutableUser.builder();
+  }
 }
